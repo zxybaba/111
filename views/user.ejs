@@ -1,0 +1,60 @@
+<!-- 用户信息部分 -->
+<div class="user-info">
+    <h2>个人信息</h2>
+    <div class="info-item">
+        <label>用户名：</label>
+        <span><%= user.username %></span>
+    </div>
+    <div class="info-item">
+        <label>账号：</label>
+        <span><%= user.user_id %></span>
+    </div>
+    <div class="info-item">
+        <button class="btn" onclick="changePassword()">修改密码</button>
+    </div>
+</div>
+
+<script>
+async function changePassword() {
+    const currentPassword = prompt('请输入当前密码：');
+    if (!currentPassword) return;
+
+    const newPassword = prompt('请输入新密码（至少6位）：');
+    if (!newPassword) return;
+
+    if (newPassword.length < 6) {
+        alert('新密码至少需要6位！');
+        return;
+    }
+
+    const confirmPassword = prompt('请再次输入新密码：');
+    if (newPassword !== confirmPassword) {
+        alert('两次输入的密码不一致！');
+        return;
+    }
+
+    try {
+        const response = await fetch('/user/profile/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('密码修改成功！');
+        } else {
+            alert(result.message || '密码修改失败');
+        }
+    } catch (error) {
+        console.error('修改失败:', error);
+        alert('修改失败，请稍后重试');
+    }
+}
+</script> 

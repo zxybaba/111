@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>旅游景点推荐</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgb(199, 152, 229);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2ecc71;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-panel {
+            text-align: right;
+        }
+        .user-info {
+            margin-bottom: 10px;
+        }
+        .user-info span {
+            margin-left: 10px;
+            color: #666;
+        }
+        .user-actions a {
+            color: #2ecc71;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+        .user-actions a:hover {
+            color: #27ae60;
+        }
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .city-card {
+            background: #98bde2;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .city-name {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .city-stats {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .rating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .fa-star {
+            color: #f1c40f;
+        }
+        .fa-landmark {
+            color: #3498db;
+        }
+        .fa-info-circle {
+            color: #95a5a6;
+        }
+        .stars {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .no-rating {
+            color: #95a5a6;
+            font-style: italic;
+        }
+        .city-link {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>旅游景点推荐</h1>
+            <div class="user-panel">
+                <% if (user) { %>
+                    <div class="user-info">
+                        <span class="username"><%= user.username %></span>
+                        <span class="user-id"><%= user.user_id %></span>
+                    </div>
+                    <div class="user-actions">
+                        <a href="/user/profile">个人中心</a>
+                        <a href="/auth/logout">退出登录</a>
+                    </div>
+                <% } else { %>
+                    <div class="user-actions">
+                        <a href="/auth/login">登录</a>
+                        <a href="/auth/register">注册</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="cities-grid">
+            <% if (cities && cities.length > 0) { %>
+                <% 
+                    // 使用Set来存储已经显示过的城市名称
+                    const displayedCities = new Set();
+                    cities.forEach(city => {
+                        // 如果这个城市名称还没有显示过，就显示它
+                        if (!displayedCities.has(city.name)) {
+                            displayedCities.add(city.name);
+                %>
+                    <a href="/cities/<%= city.city_id %>" class="city-link">
+                        <div class="city-card">
+                            <div class="city-name"><%= city.name %></div>
+                            <div class="city-stats">
+                                <% if (city.avg_rating) { %>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <span class="stars"><%= city.avg_rating.toFixed(1) %></span>
+                                    </div>
+                                <% } else { %>
+                                    <span class="no-rating">暂无评分</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </a>
+                <% 
+                        }
+                    }); 
+                %>
+            <% } else { %>
+                <div class="no-cities">
+                    暂无城市数据
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        // 在cities循环开始前添加
+        console.log('Cities data:', <%- JSON.stringify(cities) %>);
+    </script>
+</body>
+</html> 

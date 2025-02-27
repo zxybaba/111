@@ -1,0 +1,12 @@
+  <nav>
+      <ul>
+          <li><a href="/">首页</a></li>
+          <li><a href="/cities/visited">我的足迹</a></li>
+          <li><a href="/cities/reviews">我的评价</a></li>
+          <li><a href="/auth/settings">账号设置</a></li>
+          <% if (locals.user && user.is_admin) { %>
+              <li><a href="/admin">管理后台</a></li>
+          <% } %>
+          <li><a href="/auth/logout">退出登录</a></li>
+      </ul>
+  </nav> 

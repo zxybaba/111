@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>账号设置 - 旅游网站</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            min-height: 100vh;
+            font-family: 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>账号设置</h1>
+        <div class="form-group">
+            <label>当前账号</label>
+            <input type="text" value="<%= user.username %>" readonly>
+        </div>
+        <div class="form-group">
+            <label>邮箱</label>
+            <input type="email" id="email" value="<%= user.email || '' %>">
+        </div>
+        <div class="form-group">
+            <button class="btn" onclick="changePassword()">修改密码</button>
+        </div>
+        <a href="/admin" class="back-link">返回管理后台</a>
+    </div>
+
+    <script>
+        async function changePassword() {
+            const currentPassword = prompt('请输入当前密码：');
+            if (!currentPassword) return;
+
+            const newPassword = prompt('请输入新密码（至少6位）：');
+            if (!newPassword) return;
+
+            if (newPassword.length < 6) {
+                alert('新密码至少需要6位！');
+                return;
+            }
+
+            const confirmPassword = prompt('请再次输入新密码：');
+            if (newPassword !== confirmPassword) {
+                alert('两次输入的密码不一致！');
+                return;
+            }
+
+            try {
+                const response = await fetch('/admin/profile/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('密码修改成功！');
+                } else {
+                    alert(result.message || '密码修改失败');
+                }
+            } catch (error) {
+                console.error('修改失败:', error);
+                alert('修改失败，请稍后重试');
+            }
+        }
+
+        // 更新邮箱
+        document.getElementById('email').onchange = async function() {
+            const email = this.value.trim();
+            
+            try {
+                const response = await fetch('/admin/profile/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('邮箱更新成功！');
+                } else {
+                    alert(result.message || '邮箱更新失败');
+                }
+            } catch (error) {
+                console.error('更新失败:', error);
+                alert('更新失败，请稍后重试');
+            }
+        };
+    </script>
+</body>
+</html> 

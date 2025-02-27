@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= attraction.name %> - 景点详情</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .attraction-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2ecc71;
+        }
+        .attraction-info {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .attraction-image {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .attraction-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .attraction-details {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .rating-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .rating-form {
+            margin-bottom: 30px;
+        }
+        .star-rating {
+            display: inline-block;
+            font-size: 0;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .star-rating input {
+            display: none;
+        }
+        .star-rating label {
+            float: right;
+            padding: 0 2px;
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+        }
+        .star-rating label:before {
+            content: '★';
+        }
+        .star-rating input:checked ~ label {
+            color: #ffd700;
+        }
+        .star-rating:not(:checked) label:hover,
+        .star-rating:not(:checked) label:hover ~ label {
+            color: #ffd700;
+        }
+        .comment-section {
+            margin-top: 30px;
+        }
+        .comment-card {
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #2ecc71;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            resize: vertical;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        textarea:focus {
+            border-color: #2ecc71;
+            outline: none;
+        }
+        .rating-display {
+            color: #ffd700;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="attraction-header">
+            <h1><%= attraction.name %></h1>
+            <p>所属城市：<%= attraction.city_name %></p>
+        </div>
+
+        <div class="attraction-info">
+            <div class="attraction-image">
+                <% if (attraction.image_url) { %>
+                    <img src="<%= attraction.image_url %>" alt="<%= attraction.name %>">
+                <% } else { %>
+                    <img src="/images/default-attraction.jpg" alt="默认景点图片">
+                <% } %>
+            </div>
+            <div class="attraction-details">
+                <h2>景点介绍</h2>
+                <p><%= attraction.description %></p>
+                <div class="stats">
+                    <p>访问人数：<%= attraction.visit_count || 0 %></p>
+                    <p>平均评分：<span class="rating-display">
+                        <% if (attraction.avg_rating) { %>
+                            <% for(let i = 0; i < Math.floor(attraction.avg_rating); i++) { %>★<% } %>
+                            <% if(attraction.avg_rating % 1 >= 0.5) { %>½<% } %>
+                        <% } else { %>
+                            暂无评分
+                        <% } %>
+                    </span></p>
+                </div>
+            </div>
+        </div>
+
+        <% if (isLoggedIn) { %>
+            <div class="rating-section">
+                <h2>添加评价</h2>
+                <form class="rating-form" id="visitForm">
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" required>
+                        <label for="star5" title="5分"></label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4" title="4分"></label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3" title="3分"></label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2" title="2分"></label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1" title="1分"></label>
+                    </div>
+                    <textarea name="comment" placeholder="分享你的游览体验..." required></textarea>
+                    <button type="submit" class="btn-primary">提交评价</button>
+                </form>
+            </div>
+        <% } else { %>
+            <div class="rating-section">
+                <p>请<a href="/auth/login">登录</a>后添加评价</p>
+            </div>
+        <% } %>
+
+        <div class="comment-section">
+            <h2>游客评价</h2>
+            <% if (visits && visits.length > 0) { %>
+                <% visits.forEach(visit => { %>
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <span class="username"><%= visit.username %></span>
+                            <span class="rating-display">
+                                <% for(let i = 0; i < Math.floor(visit.rating); i++) { %>★<% } %>
+                                <% if(visit.rating % 1 >= 0.5) { %>½<% } %>
+                            </span>
+                        </div>
+                        <p><%= visit.comment %></p>
+                        <small>访问时间：<%= new Date(visit.visit_date).toLocaleString() %></small>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p>暂无评价</p>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('visitForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 获取选中的评分
+            const ratingInput = document.querySelector('input[name="rating"]:checked');
+            if (!ratingInput) {
+                alert('请选择评分');
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const data = {
+                rating: parseFloat(formData.get('rating')),
+                comment: formData.get('comment')
+            };
+            
+            try {
+                const response = await fetch(`/cities/attraction/<%= attraction.attraction_id %>/visit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('评价提交成功！');
+                    location.reload();
+                } else {
+                    alert(result.error || '评价提交失败，请重试');
+                }
+            } catch (err) {
+                console.error('提交评价失败:', err);
+                alert('评价提交失败，请重试');
+            }
+        });
+    </script>
+</body>
+</html> 

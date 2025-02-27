@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>管理员后台 - 旅游网站</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 管理员界面专用样式 */
+        body {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            min-height: 100vh;
+            font-family: 'Microsoft YaHei', sans-serif;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 导航栏样式优化 */
+        header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .admin-content {
+            display: flex;
+            gap: 25px;
+        }
+
+        /* 主内容区域样式优化 */
+        .admin-main {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        /* 各部分管理样式优化 */
+        .admin-main section {
+            margin: 0 0 40px;
+            padding: 30px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #3498db;
+        }
+
+        /* 用户管理和评价管理部分样式 */
+        #user-management, #review-management {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border: 2px solid #3498db;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            margin: -30px -30px 25px -30px;
+            padding: 20px 30px;
+        }
+
+        .section-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* 表格样式优化 */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #3498db;
+        }
+
+        th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+            padding: 15px 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f8f9fa;
+        }
+
+        /* 按钮样式优化 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 操作按钮样式 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .action-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+        }
+
+        .action-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 表格容器样式 */
+        .table-container {
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* 评分样式 */
+        .rating {
+            color: #f1c40f;
+            font-weight: 600;
+        }
+
+        /* 状态标签样式 */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #2ecc71;
+            color: white;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .admin-content {
+                flex-direction: column;
+            }
+        }
+
+        /* 添加顶部导航链接样式 */
+        .admin-nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .admin-nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* 添加用户信息样式 */
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: white;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 侧边栏样式优化 */
+        .admin-sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-sidebar h3 {
+            color: white;
+            margin: 0 0 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .admin-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .admin-sidebar li {
+            margin-bottom: 12px;
+        }
+
+        .admin-sidebar a {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-sidebar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 1200px) {
+            .admin-sidebar {
+                width: 100%;
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="admin-header-left">
+                <h1>管理员后台</h1>
+                <span class="user-info">当前账号：<%= user.user_id %></span>
+            </div>
+            <div class="admin-nav-links">
+                <a href="/auth/login" class="nav-link">切换账号</a>
+                <a href="/admin/profile" class="nav-link">账号设置</a>
+            </div>
+        </header>
+        
+        <div class="admin-content">
+            <div class="admin-sidebar">
+                <h3>管理菜单</h3>
+                <ul>
+                    <li><a href="#cities" onclick="switchSection('cities')">城市管理</a></li>
+                    <li><a href="#attractions" onclick="switchSection('attractions')">景点管理</a></li>
+                    <li><a href="#reviews" onclick="switchSection('reviews')">评价管理</a></li>
+                    <li><a href="#users" onclick="switchSection('users')">用户管理</a></li>
+                </ul>
+            </div>
+            
+            <div class="admin-main">
+                <!-- 城市管理 -->
+                <section id="cities">
+                    <div class="section-header">
+                        <h2>城市管理</h2>
+                        <a href="/admin/cities/add" class="btn btn-primary">添加城市</a>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>城市名称</th>
+                                    <th>景点数量</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% cities.forEach(city => { %>
+                                <tr>
+                                    <td><%= city.city_id %></td>
+                                    <td><%= city.name %></td>
+                                    <td><%= city.attraction_count %></td>
+                                    <td class="action-buttons">
+                                        <button class="delete-btn" onclick="showDeleteConfirm('city', <%= city.city_id %>, '<%= city.name %>')">删除</button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 景点管理 -->
+                <section id="attractions">
+                    <div class="section-header">
+                        <h2>景点管理</h2>
+                        <a href="/admin/attractions/add" class="btn btn-primary">添加景点</a>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>景点名称</th>
+                                    <th>所属城市</th>
+                                    <th>评价数量</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% attractions.forEach(attraction => { %>
+                                <tr>
+                                    <td><%= attraction.attraction_id %></td>
+                                    <td><%= attraction.name %></td>
+                                    <td><%= attraction.city_name %></td>
+                                    <td><%= attraction.review_count %></td>
+                                    <td class="action-buttons">
+                                        <a href="/admin/attractions/<%= attraction.attraction_id %>/edit" class="btn btn-primary">编辑</a>
+                                        <button class="delete-btn" onclick="showDeleteConfirm('attraction', <%= attraction.attraction_id %>, '<%= attraction.name %>')">删除</button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 评价管理 -->
+                <section id="reviews">
+                    <div class="section-header">
+                        <h2>评价管理</h2>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>用户</th>
+                                    <th>景点</th>
+                                    <th>评分</th>
+                                    <th>评价内容</th>
+                                    <th>评价时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% reviews.forEach(review => { %>
+                                <tr>
+                                    <td><%= review.id %></td>
+                                    <td><%= review.username %></td>
+                                    <td><%= review.attraction_name %></td>
+                                    <td class="rating"><%= review.rating %> ★</td>
+                                    <td><%= review.comment %></td>
+                                    <td><%= review.created_at %></td>
+                                    <td class="action-buttons">
+                                        <button class="delete-btn" onclick="showDeleteConfirm('review', <%= review.id %>, '此评价')">删除</button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 用户管理 -->
+                <section id="users">
+                    <div class="section-header">
+                        <h2>用户管理</h2>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>用户名</th>
+                                    <th>邮箱</th>
+                                    <th>注册时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% users.forEach(user => { %>
+                                <tr>
+                                    <td><%= user.user_id %></td>
+                                    <td><%= user.username %></td>
+                                    <td><%= user.email %></td>
+                                    <td><%= user.created_at %></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary" onclick="showResetPasswordConfirm('<%= user.user_id %>', '<%= user.username %>')">重置密码</button>
+                                        <button class="delete-btn" onclick="showDeleteConfirm('user', '<%= user.user_id %>', '<%= user.username %>')">删除</button>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html> 

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>好友管理 - 旅游网站</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            min-height: 100vh;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .friends-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .friends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .friends-header h2 {
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .add-friend {
+            padding: 10px 20px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-friend:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .friends-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .friend-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .friend-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .friend-info {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .friend-name {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .friend-stats {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .friend-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .friend-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #2980b9;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">返回首页</a>
+        
+        <div class="friends-container">
+            <div class="friends-header">
+                <h2>我的好友</h2>
+                <button class="add-friend" onclick="showAddFriendModal()">添加好友</button>
+            </div>
+            
+            <div class="friends-list">
+                <% friends.forEach(friend => { %>
+                    <div class="friend-card">
+                        <div class="friend-info">
+                            <div class="friend-name"><%= friend.user_id %></div>
+                            <div class="friend-stats">
+                                <p>访问城市：<%= friend.visited_cities %></p>
+                                <p>评价数量：<%= friend.review_count %></p>
+                            </div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="view-btn" onclick="viewFriendProfile('<%= friend.user_id %>')">查看足迹</button>
+                            <button class="remove-btn" onclick="removeFriend('<%= friend.user_id %>')">删除好友</button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showAddFriendModal() {
+            const userId = prompt('请输入好友的用户ID：');
+            if (userId) {
+                addFriend(userId);
+            }
+        }
+
+        async function addFriend(friendId) {
+            try {
+                const response = await fetch('/friends/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ friend_id: friendId })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert(data.message);
+                    return;
+                }
+
+                location.reload();
+            } catch (err) {
+                console.error('添加好友失败:', err);
+                alert('添加好友失败，请稍后重试');
+            }
+        }
+
+        async function removeFriend(friendId) {
+            if (!confirm('确定要删除这个好友吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/friends/${friendId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('删除好友失败');
+                }
+            } catch (err) {
+                console.error('删除好友失败:', err);
+                alert('删除好友失败，请稍后重试');
+            }
+        }
+
+        function viewFriendProfile(friendId) {
+            window.location.href = `/friends/${friendId}/profile`;
+        }
+    </script>
+</body>
+</html> 

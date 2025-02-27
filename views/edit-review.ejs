@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>编辑评价</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .edit-review-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .current-image {
+            margin: 10px 0;
+            max-width: 300px;
+            border-radius: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .save-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .save-btn:hover, .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav') %>
+    
+    <div class="edit-review-container">
+        <h2>编辑评价</h2>
+        
+        <form id="editReviewForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>景点名称</label>
+                <div><%= review.attraction_name %> (<%= review.city_name %>)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="rating">评分 (1-5)</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" step="0.5" value="<%= review.rating %>" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="comment">评价内容</label>
+                <textarea id="comment" name="comment" required><%= review.comment %></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="image">更新图片（可选）</label>
+                <% if (review.image_url) { %>
+                    <div>
+                        <img src="<%= review.image_url %>" alt="当前图片" class="current-image">
+                    </div>
+                <% } %>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="save-btn">保存修改</button>
+                <button type="button" class="cancel-btn" onclick="window.location.href='/cities/reviews'">取消</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('editReviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('rating', document.getElementById('rating').value);
+            formData.append('comment', document.getElementById('comment').value);
+            
+            const imageFile = document.getElementById('image').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+            
+            try {
+                const response = await fetch('/cities/reviews/<%= review.id %>', {
+                    method: 'PUT',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/cities/reviews';
+                } else {
+                    const data = await response.json();
+                    alert(data.error || '更新失败，请稍后重试');
+                }
+            } catch (err) {
+                console.error('更新评价失败:', err);
+                alert('更新失败，请稍后重试');
+            }
+        });
+    </script>
+</body>
+</html> 

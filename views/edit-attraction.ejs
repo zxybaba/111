@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>编辑景点 - 管理员后台</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        input[type="text"], 
+        select, 
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        .image-preview {
+            margin-top: 10px;
+            max-width: 300px;
+        }
+        .image-preview img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #3498db;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        .header h1 {
+            margin: 0;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>编辑景点</h1>
+        </div>
+        <form id="editAttractionForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">景点名称</label>
+                <input type="text" id="name" name="name" value="<%= attraction.name %>" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="citySelect">所属城市</label>
+                <select id="citySelect" name="city_id" required>
+                    <% cities.forEach(city => { %>
+                        <option value="<%= city.city_id %>" <%= city.city_id === attraction.city_id ? 'selected' : '' %>>
+                            <%= city.name %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">景点描述</label>
+                <textarea id="description" name="description" required><%= attraction.description %></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="image">景点图片</label>
+                <input type="file" id="image" name="image" accept="image/jpeg,image/png">
+                <% if (attraction.image_url) { %>
+                    <div class="image-preview">
+                        <p>当前图片：</p>
+                        <img src="<%= attraction.image_url %>" alt="景点图片">
+                    </div>
+                <% } %>
+            </div>
+            
+            <button type="submit" class="btn">保存修改</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('editAttractionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('/admin/attractions/<%= attraction.attraction_id %>/update', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('修改成功！');
+                    window.location.href = '/admin';
+                } else {
+                    alert('修改失败：' + (result.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('修改失败:', error);
+                alert('修改失败，请稍后重试');
+            }
+        });
+    </script>
+</body>
+</html> 

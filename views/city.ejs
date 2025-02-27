@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= city.name %> - 旅游网站</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-btn">返回首页</a>
+        </header>
+        
+        <div class="city-detail">
+            <h1><%= city.name %></h1>
+            
+            <div class="city-info">
+                <div class="rating-info">
+                    <h2>城市评分</h2>
+                    <div class="rating">
+                        <% if (city.rating) { %>
+                            <%= Number(city.rating).toFixed(1) %> / 5.0
+                        <% } else { %>
+                            暂无评分
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 评价列表 -->
+            <div class="reviews">
+                <h2>用户评价</h2>
+                <% if (reviews && reviews.length > 0) { %>
+                    <% reviews.forEach(review => { %>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <span class="user-id">用户: <%= review.user_id %></span>
+                                <span class="rating">评分: <%= review.rating %></span>
+                                <span class="date"><%= new Date(review.visit_date).toLocaleDateString() %></span>
+                            </div>
+                            <p class="comment"><%= review.comment %></p>
+                            <% if (review.image_url) { %>
+                                <div class="review-image">
+                                    <img src="/uploads/<%= review.image_url %>" alt="评价图片">
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p>暂无评价</p>
+                <% } %>
+            </div>
+            
+            <!-- 景点列表 -->
+            <div class="attractions-list">
+                <h2>景点列表</h2>
+                <div class="attractions-grid">
+                    <% attractions.forEach(attraction => { %>
+                        <div class="attraction-card">
+                            <h3><%= attraction.name %></h3>
+                            <p class="description"><%= attraction.description %></p>
+                            <div class="rating">
+                                <% if (attraction.rating) { %>
+                                    评分：<%= Number(attraction.rating).toFixed(1) %> / 5.0
+                                <% } else { %>
+                                    暂无评分
+                                <% } %>
+                            </div>
+                            <!-- 评价表单 -->
+                            <div class="review-form">
+                                <h3>添加评价</h3>
+                                <form action="/attractions/<%= attraction.attraction_id %>/review" method="POST" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label>评分：</label>
+                                        <input type="number" name="rating" min="0" max="5" step="0.1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>评价：</label>
+                                        <textarea name="comment" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>上传图片：</label>
+                                        <input type="file" name="image" accept="image/*" optional>
+                                        <p class="file-hint">支持jpg、png格式，大小不超过5MB（可选）</p>
+                                    </div>
+                                    <button type="submit">提交评价</button>
+                                </form>
+                            </div>
+                            <a href="/attractions/<%= attraction.attraction_id %>" class="view-btn">查看详情</a>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

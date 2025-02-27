@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>添加景点 - 旅游网站</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            min-height: 100vh;
+            font-family: 'Microsoft YaHei', sans-serif;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .attraction-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-top: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* 添加图片上传相关样式 */
+        .image-upload {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .image-upload input[type="file"] {
+            display: none;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            height: 200px;
+            margin-top: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .image-requirements {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>添加景点</h1>
+            <a href="/admin" class="back-link">返回管理后台</a>
+        </div>
+
+        <div class="attraction-card">
+            <div class="alert alert-success" id="successAlert"></div>
+            <div class="alert alert-danger" id="errorAlert"></div>
+
+            <form id="attractionForm" onsubmit="addAttraction(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="attractionName">景点名称</label>
+                    <input type="text" class="form-control" id="attractionName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cityId">所属城市</label>
+                    <select class="form-control" id="cityId" required>
+                        <option value="">请选择城市</option>
+                        <% cities.forEach(city => { %>
+                        <option value="<%= city.city_id %>"><%= city.name %></option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">景点描述</label>
+                    <textarea class="form-control" id="description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>景点图片</label>
+                    <div class="image-upload" onclick="document.getElementById('imageInput').click()">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">点击上传图片</div>
+                        <div class="image-requirements">支持 jpg、png 格式，最大 5MB</div>
+                        <input type="file" id="imageInput" accept="image/jpeg,image/png" required>
+                    </div>
+                    <div class="image-preview" id="imagePreview">
+                        <img id="previewImg" src="#" alt="预览图片">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">添加景点</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 图片预览功能
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // 检查文件大小
+                if (file.size > 5 * 1024 * 1024) {
+                    document.getElementById('errorAlert').textContent = '图片大小不能超过5MB';
+                    document.getElementById('errorAlert').style.display = 'block';
+                    this.value = '';
+                    return;
+                }
+
+                // 检查文件类型
+                if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
+                    document.getElementById('errorAlert').textContent = '只支持JPG和PNG格式的图片';
+                    document.getElementById('errorAlert').style.display = 'block';
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('errorAlert').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function addAttraction(event) {
+            event.preventDefault();
+            
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('attractionName').value);
+            formData.append('city_id', document.getElementById('cityId').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('image', document.getElementById('imageInput').files[0]);
+
+            try {
+                const response = await fetch('/admin/attractions', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    successAlert.textContent = '景点添加成功！';
+                    successAlert.style.display = 'block';
+                    errorAlert.style.display = 'none';
+                    
+                    // 清空表单
+                    document.getElementById('attractionForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    
+                    // 2秒后跳转回管理页面
+                    setTimeout(() => {
+                        window.location.href = '/admin';
+                    }, 2000);
+                } else {
+                    errorAlert.textContent = result.message || '添加失败';
+                    errorAlert.style.display = 'block';
+                    successAlert.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('添加失败:', error);
+                errorAlert.textContent = '服务器错误，请稍后重试';
+                errorAlert.style.display = 'block';
+                successAlert.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 

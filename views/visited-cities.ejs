@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>已访问城市 - 旅游网站</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2ecc71, #3498db);
+            min-height: 100vh;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .visited-cities {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .visited-cities h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .city-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .city-name {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .visit-info {
+            margin: 15px 0;
+            color: #34495e;
+        }
+
+        .visit-date {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .attractions-list {
+            margin-top: 15px;
+        }
+
+        .attractions-list h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .attractions-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .attractions-list li {
+            color: #34495e;
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-btn">返回首页</a>
+        
+        <div class="visited-cities">
+            <h2>我的足迹</h2>
+            <div class="cities-grid">
+                <% visitedCities.forEach(city => { %>
+                    <div class="city-card">
+                        <h3 class="city-name"><%= city.name %></h3>
+                        <div class="visit-info">
+                            <p>访问次数：<%= city.visit_count %></p>
+                            <p>平均评分：<%= city.avg_rating ? Number(city.avg_rating).toFixed(1) : '暂无评分' %></p>
+                        </div>
+                        <div class="attractions-list">
+                            <h4>已访问景点：</h4>
+                            <ul>
+                                <% city.attractions.forEach(attraction => { %>
+                                    <li>
+                                        <%= attraction.name %>
+                                        <% if (attraction.rating) { %>
+                                            (评分：<%= Number(attraction.rating).toFixed(1) %>)
+                                        <% } %>
+                                    </li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                        <div class="visit-date">
+                            最近访问：<%= new Date(city.last_visit).toLocaleDateString() %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

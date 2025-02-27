@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录 - 旅游网站</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* 登录页面专用样式 */
+        body {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .login-container h1 {
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 28px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .login-container h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #27ae60);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 12px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            display: none;
+        }
+
+        .login-container p {
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .login-container a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .login-container a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>欢迎登录旅游网站</h1>
+        <div id="error-message" class="error-message"></div>
+        <form id="loginForm" method="POST" action="/auth/login">
+            <div class="form-group">
+                <label>用户账号</label>
+                <input type="text" name="user_id" required>
+            </div>
+            <div class="form-group">
+                <label>登录密码</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="login-btn">立即登录</button>
+        </form>
+        <p>还没有账号？<a href="/auth/register">立即注册</a></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const user_id = formData.get('user_id');
+            const password = formData.get('password');
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    errorMessage.textContent = data.message;
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                // 登录成功，重定向
+                window.location.href = data.isAdmin ? '/admin' : '/';
+            } catch (err) {
+                errorMessage.textContent = '服务器错误，请稍后重试';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html> 
